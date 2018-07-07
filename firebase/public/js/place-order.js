@@ -37,12 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
            var $tablebody = $(`
             <div class="col-lg-12">
               <div class="card">
-                 <img class="card-img-top" src="images/bg-title-01.jpg" alt="Card image cap">
+                 <img class="card-img-top" src="images/foods/${o.image}" alt="Card image cap">
                  <div class="card-body">
                      <h4 class="card-title mb-3">${o.name}</h4>
                      <p class="card-text">${o.description}</p>
                      <p class="card-text">HKD ${o.price}</p>
-                     <p class="cart-text">${o.price}</p>
                      <input type="hidden" class="menu-item-path" value="${i.ref.path}">
                      <input class="menu-item-qty" value="0">
                  </div>
