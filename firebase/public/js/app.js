@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '</th><th>' + "Mat number" +
                 '</th><th>' + "Dish" +
                 '</th><th>' + "Adjustment" +
-                '</th><th>' + "Time" +
+                '</th><th>' + "Time of Order" +
                 '</th></tr>' +
                 '</thead>' +
                 '<tbody class="no-border">' +
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 '</th><th>' + "Dish" +
                 '</th><th>' + "Adjustment" +
                 '</th><th>' + "Leftover (grams)" +
-                '</th><th>' + "Time" +
+                '</th><th>' + "Time Delievered" +
                 '</th></tr>' +
                 '</thead>' +
                 '<tbody class="no-border">' +
