@@ -43,11 +43,15 @@ document.addEventListener('DOMContentLoaded', function() {
                      <p class="card-text">${o.description}</p>
                      <p class="card-text">HKD ${o.price}</p>
                      <input type="hidden" class="menu-item-path" value="${i.ref.path}">
+                     <input type="hidden" id="price-${i.ref.id}" value="${o.price}">
                      <input type="range" min="0" max="10" value="0" class="slider menu-item-qty" id="slider-${i.ref.id}"></input>
-                     <p>Qty: <div id="value-${i.ref.id}">0</div></p>
+                     <p>Qty: <span id="qty-${i.ref.id}">0</span></p>
+                     <p>Subtotal: HKD <span id="subtotal-${i.ref.id}">0</span></p>
                      <script>
                      document.getElementById("slider-${i.ref.id}").oninput = function() {
-                       document.getElementById("value-${i.ref.id}").innerHTML = this.value;
+                       document.getElementById("qty-${i.ref.id}").innerHTML = this.value;
+                       document.getElementById("subtotal-${i.ref.id}").innerHTML = this.value
+                        * parseInt(document.getElementById("price-${i.ref.id}").value);
                      };
                      </script>
                  </div>
