@@ -61,7 +61,7 @@ function placeOrder() {
   items=[];
   for (i = 0; i < paths.length; i++) {
     if (qtys[i].value > 0) {
-      items[i] = { 'ref': db.doc(paths[i].value), 'qty': parseInt(qtys[i].value)};
+      items.push({ 'ref': db.doc(paths[i].value), 'qty': parseInt(qtys[i].value)});
     }
   }
 
@@ -78,6 +78,7 @@ function placeOrder() {
   db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/orders').add(newOrder)
     .then(function() {
         console.log("Document successfully written!");
+        window.location.replace('order-processing.html');
     })
     .catch(function(error) {
         console.error("Error writing document: ", error);
