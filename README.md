@@ -6,6 +6,8 @@ Food waste is a problem with 2 culprits: 1) The mismatch in expectation and actu
 
 We have designed an experience that will help consumer communicate with the servers in a simple and efficient way. This also provide useful data for restaurants. This solution directly addresses the first issue and indirectly provide useful information to assist restaurants to improve on their orders of raw ingredients. 
 
+For details please go to http://www.hackathon.io/ecoplate
+
 ## Folders
 
 ### firebase
