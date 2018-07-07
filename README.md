@@ -4,7 +4,7 @@ We believe that by providing communication between the consumer and the chef in 
 
 Food waste is a problem with 2 culprits: 1) The mismatch in expectation and actual portion sizes between the server and the consumer. 2) The unpredictability of food required for a particular service period and the perishability of food. 
 
-We have designed an experience that will help consumer communicate with the servers in a simple and efficient way. This also provide useful data for restaurants. This solution directly addresses the first issue and indirectly provide useful information to assist restaurants to improve on their orders of raw ingredients. 
+We have designed an experience that will help consumer communicate with the servers in a simple and efficient way.
 
 For details please go to http://www.hackathon.io/ecoplate
 
