@@ -34,8 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
       orders.push(doc.data())
     })
     console.log('orders: ', orders)
-    console.log('orders length', orders.length);
-    localStorage.setItem("latest_orderID", orders.length)
+    console.log('latest: ', orders[0].orderID);
+    localStorage.setItem("latest_orderID",  orders[0].orderID)
     showOrders(orders);
 
   })
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var date = new Date();
     var old_orderID = parseInt(localStorage.getItem('latest_orderID'));
-    var new_orderID = old_orderID;
+    var new_orderID = old_orderID+1;
     var newOrderData = {
       "adjustment":1,
       "mat":"dummy",
