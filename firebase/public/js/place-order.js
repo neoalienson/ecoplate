@@ -25,181 +25,41 @@ document.addEventListener('DOMContentLoaded', function() {
   const db = firebase.firestore();
   const settings = {/* your settings... */ timestampsInSnapshots: true};
   db.settings(settings);
-
-  const orderInfo = db.collection('orders').orderBy("orderID", "desc").limit(5);
-  orderInfo.onSnapshot(querySnapshot=>{
-    var orders = [];
+  // PVIRTZ9n1a7q7YVXJqAB
+  /*
+  db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/menu').onSnapshot(querySnapshot=>{
     querySnapshot.forEach(doc =>{
-      orders.push(doc.data())
+      console.log(doc.data);
     })
-
-  console.log('orders: ', orders)
-  console.log('latest: ', orders[0].orderID);
-  localStorage.setItem("latest_orderID",  orders[0].orderID)
-  showOrders(true, orders);
   });
-
-  const doneOrderInfo = db.collection('done_orders').orderBy("orderID", "desc").limit(5);
-  doneOrderInfo.onSnapshot(querySnapshot=>{
-    var doneOrders = [];
-    querySnapshot.forEach(doc =>{
-      doneOrders.push(doc.data())
-    })
-    showOrders(false, doneOrders);
-  });
-
-
-
-  function addOrder(){
-
-    var date = new Date();
-    var old_orderID = parseInt(localStorage.getItem('latest_orderID'));
-    var new_orderID = old_orderID+1;
-    var newOrderData = {
-      "adjustment":1,
-      "mat":"dummy",
-      "dish":"chicken rice",
-      "time": date,
-      "orderID":new_orderID
-    };
-
-    console.log("new: ", newOrderData)
-
-    db.collection('orders').doc(new_orderID.toString()).set(newOrderData)
-      .then(function() {
-          console.log("Document successfully written!");
+*/
+  db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/menu').get().then(function(collection) {
+    $('#menuTable').empty();
+      console.log("Document data:", collection.docs);
+       collection.docs.forEach((o, index)=>{
+         console.log("Document data 2:", o.ref.path);
+         db.doc(o.ref.path).get().then(function(doc) {
+           console.log(doc.data());
+           o = doc.data();
+           var $tablebody = $(`
+            <div class="col-lg-12">
+              <div class="card">
+                 <img class="card-img-top" src="images/bg-title-01.jpg" alt="Card image cap">
+                 <div class="card-body">
+                     <h4 class="card-title mb-3">${o.name}</h4>
+                     <p class="card-text">${o.description}</p>
+                     <p class="card-text">HKD ${o.price}</p>
+                     <p class="cart-text">${o.price}</p>
+                 </div>
+             </div>
+           </div>
+              `)
+          $('#menuTable').append($tablebody);
+        })
       })
-      .catch(function(error) {
-          console.error("Error writing document: ", error);
-      });
-
-  }
-
-  function doneOrder(orderID){
-    var date = new Date();
-
-    // Get from orders
-    var new_doneOrder = db.collection('orders').doc(orderID.toString());
-    new_doneOrder.get().then(function(doc) {
-        if (doc.exists) {
-          var new_data = doc.data();
-
-          console.log("Document data 1:", doc.data());
-
-
-    // Create new object to store to done data
-
-          var additional_data = {
-            "leftover":100
-          }
-          new_data.time = date;
-          Object.assign(new_data, additional_data);
-
-          // Move to doneOrder collection
-          db.collection('done_orders').doc(orderID.toString()).set(new_data)
-            .then(function() {
-                console.log("Document successfully written!");
-                // Delete from newOrders
-                db.collection("orders").doc(orderID.toString()).delete().then(function() {
-                    console.log("Document successfully deleted!");
-                }).catch(function(error) {
-                    console.error("Error removing document: ", error);
-                });
-            })
-            .catch(function(error) {
-                console.error("Error writing document: ", error);
-            });
-
-          console.log("Document data 2:", additional_data);
-          console.log("Document data: 3 ", new_data);
-
-
-
-        } else {
-            console.log("No such document!");
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
-    });
-
-
-  }
-
-  function showOrders(status, orders){
-    if (status){
-
-            $('#orderTable').empty();
-            var head = '<thead>' +
-                '<tr><th>' + "OrderID" +
-                '</th><th>' + "Mat number" +
-                '</th><th>' + "Dish" +
-                '</th><th>' + "Adjustment" +
-                '</th><th>' + "Time" +
-                '</th></tr>' +
-                '</thead>' +
-                '<tbody class="no-border">' +
-                '</tbody>';
-            $('#orderTable').append(head);
-            orders.forEach((o, index)=>{
-                var $tablebody = $(`
-                    <tr><td>  ${o.orderID}
-                    </td><td>  ${o.mat}
-                    </td><td>  ${o.dish}
-                    </td><td>  ${o.adjustment}
-                    </td><td>  ${o.time.toDate()}
-                    </td></tr>;
-                    `)
-                $tablebody.on('click',_=>{doneOrder(o.orderID)});
-                $('#orderTable').find('tbody').append($tablebody);
-            })
-        } else {
-            $('#doneOrderTable').empty();
-            var head = '<thead>' +
-                '<tr><th>' + "OrderID" +
-                '</th><th>' + "Dish" +
-                '</th><th>' + "Adjustment" +
-                '</th><th>' + "Leftover (grams)" +
-                '</th><th>' + "Time" +
-                '</th></tr>' +
-                '</thead>' +
-                '<tbody class="no-border">' +
-                '</tbody>';
-            $('#doneOrderTable').append(head);
-            orders.forEach((o, index)=>{
-                var $tablebody = $(`
-                    <tr><td>  ${o.orderID}
-                    </td><td>  ${o.dish}
-                    </td><td>  ${o.adjustment}
-                    </td><td>  ${o.leftover}
-                    </td><td>  ${o.time.toDate()}
-                    </td></tr>;
-                    `)
-                $tablebody.on('click',_=>{
-                  window.location.href= '/chart.html#'+ o.orderID;
-                });
-                $('#doneOrderTable').find('tbody').append($tablebody);
-            })
-        }
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  }).catch(function(error) {
+    console.log("Error getting document:", error);
+  });
 
 // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 AUTHENTICATION 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
