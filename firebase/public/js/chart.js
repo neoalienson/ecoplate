@@ -34,10 +34,15 @@ document.addEventListener('DOMContentLoaded', function() {
     db.settings(settings);
     const doneOrderInfo = db.collection('done_orders').doc(orderID);
       doneOrderInfo.onSnapshot(doc=>{
-        console.log("doc: ", doc.data().weights);
-        var weights = doc.data().weights;
+        var allweights = doc.data().weights;
+        if (allweights.length > 11){
+          var weights = allweights.slice(allweights.length - 10, allweights.length)
+        } else {
+          var weights = allweights
+        }
         var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
         drawChart(weights, weightLables);
+        showOrderDetails(doc.data())
       })
   }
 
@@ -56,9 +61,34 @@ document.addEventListener('DOMContentLoaded', function() {
           data :weights
         }]
       },
+      options: {
+        animation: {
+            duration: 0, // general animation time
+        },
+        hover: {
+            animationDuration: 0, // duration of animations when hovering an item
+        },
+        responsiveAnimationDuration: 0, // animation duration after a resize
+      scales: {
+          yAxes : [{
+            display: true,
+            ticks: {
+              suggestedMin: 50,
+              suggestedMax: 130
+            }
+          }]
+        }
+      }
     }
-    console.log("chartData: ", chartData);
     let weightChart = new Chart(weightChartelem, chartData);
-
-    
   }
+
+  function showOrderDetails(od){
+    document.getElementById('dishTime').innerHTML = od.time.toDate();
+    console.log("orderDetails: ", od);
+            var $tablebody = $(`
+              <tr><td>  Order ID </td><td>  ${od.orderID} </tr>
+              <tr><td>  Mat ID </td><td>  ${od.mat} </tr>
+              <tr><td>  Dish </td><td>  ${od.dish} </tr>`)
+            $('#orderDetails').find('tbody').append($tablebody);
+    }
