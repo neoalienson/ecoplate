@@ -26,19 +26,29 @@ document.addEventListener('DOMContentLoaded', function() {
   const settings = {/* your settings... */ timestampsInSnapshots: true};
   db.settings(settings);
 
-  // const shopInfo = db.collection('shops').doc('PVIRTZ9n1a7q7YVXJqAB').collection('orders');
-  const orderInfo = db.collection('orders').orderBy("orderID", "desc").limit(7);
+  const orderInfo = db.collection('orders').orderBy("orderID", "desc").limit(5);
   orderInfo.onSnapshot(querySnapshot=>{
     var orders = [];
     querySnapshot.forEach(doc =>{
       orders.push(doc.data())
     })
-    console.log('orders: ', orders)
-    console.log('latest: ', orders[0].orderID);
-    localStorage.setItem("latest_orderID",  orders[0].orderID)
-    showOrders(orders);
 
-  })
+  console.log('orders: ', orders)
+  console.log('latest: ', orders[0].orderID);
+  localStorage.setItem("latest_orderID",  orders[0].orderID)
+  showOrders(true, orders);
+  });
+
+  const doneOrderInfo = db.collection('done_orders').orderBy("orderID", "desc").limit(5);
+  doneOrderInfo.onSnapshot(querySnapshot=>{
+    var doneOrders = [];
+    querySnapshot.forEach(doc =>{
+      doneOrders.push(doc.data())
+    })
+    showOrders(false, doneOrders);
+  });
+
+
 
   function addOrder(){
 
@@ -66,43 +76,58 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function doneOrder(orderID){
+    var date = new Date();
 
-    console.log("done: ", orderID)
-    // Add a new document in collection "cities"
-    // let shopDoc = db.collection("shops").doc("PVIRTZ9n1a7q7YVXJqAB");
-    //
-    // return db.runTransaction(function(transaction) {
-    //
-    //   // This code may get re-run multiple times if there are conflicts.
-    //   return transaction.get(shopDoc).then(function(sDoc) {
-    //       if (!sDoc.exists) {
-    //           throw "Document does not exist!";
-    //       }
-    //
-    //       var orders = sDoc.data().orders;
-    //       console.log(orders)
-    //       date = new Date();
-    //       var newOrderData = {
-    //         "adjustment":1,
-    //         "mat":"dummy",
-    //         "dish":"chicken rice",
-    //         "time": date
-    //       };
-    //
-    //       console.log("new order: ", newOrderData);
-    //
-    //       var newOrders = orders.push(newOrderData);
-    //       console.log("newOrders: ", newOrders)
-    //       transaction.update(shopDoc, { orders: orders});
-    //     });
-    // }).then(function() {
-    //     console.log("Transaction successfully committed!");
-    // }).catch(function(error) {
-    //     console.log("Transaction failed: ", error);
-    // });
+    // Get from orders
+    var new_doneOrder = db.collection('orders').doc(orderID.toString());
+    new_doneOrder.get().then(function(doc) {
+        if (doc.exists) {
+          var new_data = doc.data();
+
+          console.log("Document data 1:", doc.data());
+
+
+    // Create new object to store to done data
+
+          var additional_data = {
+            "leftover":100
+          }
+          new_data.time = date;
+          Object.assign(new_data, additional_data);
+
+          // Move to doneOrder collection
+          db.collection('done_orders').doc(orderID.toString()).set(new_data)
+            .then(function() {
+                console.log("Document successfully written!");
+                // Delete from newOrders
+                db.collection("orders").doc(orderID.toString()).delete().then(function() {
+                    console.log("Document successfully deleted!");
+                }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                });
+            })
+            .catch(function(error) {
+                console.error("Error writing document: ", error);
+            });
+
+          console.log("Document data 2:", additional_data);
+          console.log("Document data: 3 ", new_data);
+
+
+
+        } else {
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+
   }
 
-  function showOrders(orders){
+  function showOrders(status, orders){
+    if (status){
+
             $('#orderTable').empty();
             var head = '<thead>' +
                 '<tr><th>' + "OrderID" +
@@ -127,7 +152,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 $tablebody.on('click',_=>{doneOrder(o.orderID)});
                 $('#orderTable').find('tbody').append($tablebody);
             })
-          }
+        } else {
+            $('#doneOrderTable').empty();
+            var head = '<thead>' +
+                '<tr><th>' + "OrderID" +
+                '</th><th>' + "Dish" +
+                '</th><th>' + "Adjustment" +
+                '</th><th>' + "Leftover (grams)" +
+                '</th><th>' + "Time" +
+                '</th></tr>' +
+                '</thead>' +
+                '<tbody class="no-border">' +
+                '</tbody>';
+            $('#doneOrderTable').append(head);
+            orders.forEach((o, index)=>{
+                var $tablebody = $(`
+                    <tr><td>  ${o.orderID}
+                    </td><td>  ${o.dish}
+                    </td><td>  ${o.adjustment}
+                    </td><td>  ${o.leftover}
+                    </td><td>  ${o.time.toDate()}
+                    </td></tr>;
+                    `)
+                $tablebody.on('click',_=>{
+                  window.location.href= '/chart.html#'+ o.orderID;
+                });
+                $('#doneOrderTable').find('tbody').append($tablebody);
+            })
+        }
+      }
 
 
 
