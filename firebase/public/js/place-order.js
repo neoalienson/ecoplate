@@ -26,19 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const settings = {/* your settings... */ timestampsInSnapshots: true};
   db.settings(settings);
   // PVIRTZ9n1a7q7YVXJqAB
-  /*
-  db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/menu').onSnapshot(querySnapshot=>{
-    querySnapshot.forEach(doc =>{
-      console.log(doc.data);
-    })
-  });
-*/
   db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/menu').get().then(function(collection) {
     $('#menuTable').empty();
       console.log("Document data:", collection.docs);
-       collection.docs.forEach((o, index)=>{
-         console.log("Document data 2:", o.ref.path);
-         db.doc(o.ref.path).get().then(function(doc) {
+       collection.docs.forEach((i, index)=>{
+         console.log("Document data 2:", i.ref.path);
+         db.doc(i.ref.path).get().then(function(doc) {
            console.log(doc.data());
            o = doc.data();
            var $tablebody = $(`
@@ -50,6 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
                      <p class="card-text">${o.description}</p>
                      <p class="card-text">HKD ${o.price}</p>
                      <p class="cart-text">${o.price}</p>
+                     <input type="hidden" class="menu-item-path" value="${i.ref.path}">
+                     <input class="menu-item-qty" value="0">
                  </div>
              </div>
            </div>
@@ -60,6 +55,36 @@ document.addEventListener('DOMContentLoaded', function() {
   }).catch(function(error) {
     console.log("Error getting document:", error);
   });
+
+function placeOrder() {
+  paths = $('.menu-item-path')
+  qtys = $('.menu-item-qty')
+  items=[];
+  for (i = 0; i < paths.length; i++) {
+    if (qtys[i].value > 0) {
+      items[i] = { 'ref': db.doc(paths[i].value), 'qty': parseInt(qtys[i].value)};
+    }
+  }
+
+  var newOrder = {
+    "adjustment": parseInt(document.getElementById('adjustment').value),
+    "mat": db.doc('/mats/3JpQC7HWhxTf8ZVIqj71'),
+    "items": items,
+    "consumer" : db.doc('/consumer/xGNSubolzxb2lmqJoOu2'),
+    "time": new Date()
+  };
+
+  console.log("new: ", newOrder)
+
+  db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/orders').add(newOrder)
+    .then(function() {
+        console.log("Document successfully written!");
+    })
+    .catch(function(error) {
+        console.error("Error writing document: ", error);
+    });
+
+}
 
 // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 AUTHENTICATION 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
