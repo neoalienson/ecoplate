@@ -15,35 +15,50 @@ document.addEventListener('DOMContentLoaded', function() {
     // checkLogin().then(displayName=>{
     //   getUserinfo(displayName)
     // })
-    var partId = window.location.hash;
-    console.log("can I get hash? ", partId)
+    var orderIDhash = window.location.hash;
+    var orderID = orderIDhash.slice(1, orderIDhash.length);
+    console.log("can I get hash? ", orderID);
+    getWeights(orderID)
   } catch (e) {
     console.error(e);
   }
 });
 
+
 // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 DATABASE 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
-  const db = firebase.firestore();
-  const settings = {/* your settings... */ timestampsInSnapshots: true};
-  db.settings(settings);
 
-  const orderInfo = db.collection('orders').orderBy("orderID", "desc").limit(5);
-  orderInfo.onSnapshot(querySnapshot=>{
-    var orders = [];
-    querySnapshot.forEach(doc =>{
-      orders.push(doc.data())
-    })
+  function getWeights(orderID){
+    const db = firebase.firestore();
+    const settings = {/* your settings... */ timestampsInSnapshots: true};
+    db.settings(settings);
+    const doneOrderInfo = db.collection('done_orders').doc(orderID);
+      doneOrderInfo.onSnapshot(doc=>{
+        console.log("doc: ", doc.data().weights);
+        var weights = doc.data().weights;
+        var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
+        drawChart(weights, weightLables);
+      })
+  }
 
-  console.log('orders: ', orders)
-  console.log('latest: ', orders[0].orderID);
-  localStorage.setItem("latest_orderID",  orders[0].orderID)
-  });
+  // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 CHARTS 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
-  const doneOrderInfo = db.collection('done_orders').orderBy("orderID", "desc").limit(5);
-  doneOrderInfo.onSnapshot(querySnapshot=>{
-    var doneOrders = [];
-    querySnapshot.forEach(doc =>{
-      doneOrders.push(doc.data())
-    })
-  });
+    function drawChart(weights, weightLables){
+
+    let weightChartelem = document.getElementById('weight-chart').getContext('2d');
+
+    var chartData = {
+      type : 'line', // bar, horizontalBar, doughnut, radar, polarArea
+      data : {
+        labels : weightLables, // time, 3 seconds for each data point
+        datasets:[{
+          label: 'Weight',
+          data :weights
+        }]
+      },
+    }
+    console.log("chartData: ", chartData);
+    let weightChart = new Chart(weightChartelem, chartData);
+
+    
+  }
