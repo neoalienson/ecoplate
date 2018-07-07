@@ -26,50 +26,80 @@ document.addEventListener('DOMContentLoaded', function() {
   const settings = {/* your settings... */ timestampsInSnapshots: true};
   db.settings(settings);
 
-  const shopInfo = db.collection('shops').doc('PVIRTZ9n1a7q7YVXJqAB');
-
-  shopInfo.onSnapshot(doc=>{
-
-    const data = doc.data();
-    console.log('data: ', data)
-    console.log('orders: ', data.orders)
-    showOrders(data.orders);
+  // const shopInfo = db.collection('shops').doc('PVIRTZ9n1a7q7YVXJqAB').collection('orders');
+  const orderInfo = db.collection('orders').orderBy("orderID", "desc").limit(7);
+  orderInfo.onSnapshot(querySnapshot=>{
+    var orders = [];
+    querySnapshot.forEach(doc =>{
+      orders.push(doc.data())
+    })
+    console.log('orders: ', orders)
+    console.log('orders length', orders.length);
+    localStorage.setItem("latest_orderID", orders.length)
+    showOrders(orders);
 
   })
 
   function addOrder(){
+
+    var date = new Date();
+    var old_orderID = parseInt(localStorage.getItem('latest_orderID'));
+    var new_orderID = old_orderID;
+    var newOrderData = {
+      "adjustment":1,
+      "mat":"dummy",
+      "dish":"chicken rice",
+      "time": date,
+      "orderID":new_orderID
+    };
+
+    console.log("new: ", newOrderData)
+
+    db.collection('orders').doc(new_orderID.toString()).set(newOrderData)
+      .then(function() {
+          console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+
+  }
+
+  function doneOrder(orderID){
+
+    console.log("done: ", orderID)
     // Add a new document in collection "cities"
-    let shopDoc = db.collection("shops").doc("PVIRTZ9n1a7q7YVXJqAB");
-
-    return db.runTransaction(function(transaction) {
-
-      // This code may get re-run multiple times if there are conflicts.
-      return transaction.get(shopDoc).then(function(sDoc) {
-          if (!sDoc.exists) {
-              throw "Document does not exist!";
-          }
-
-          var orders = sDoc.data().orders;
-          console.log(orders)
-          date = new Date();
-          var newOrderData = {
-            "adjustment":1,
-            "mat":"dummy",
-            "dish":"chicken rice",
-            "time": date
-          };
-
-          console.log("new order: ", newOrderData);
-
-          var newOrders = orders.push(newOrderData);
-          console.log("newOrders: ", newOrders)
-          transaction.update(shopDoc, { orders: orders});
-        });
-    }).then(function() {
-        console.log("Transaction successfully committed!");
-    }).catch(function(error) {
-        console.log("Transaction failed: ", error);
-    });
+    // let shopDoc = db.collection("shops").doc("PVIRTZ9n1a7q7YVXJqAB");
+    //
+    // return db.runTransaction(function(transaction) {
+    //
+    //   // This code may get re-run multiple times if there are conflicts.
+    //   return transaction.get(shopDoc).then(function(sDoc) {
+    //       if (!sDoc.exists) {
+    //           throw "Document does not exist!";
+    //       }
+    //
+    //       var orders = sDoc.data().orders;
+    //       console.log(orders)
+    //       date = new Date();
+    //       var newOrderData = {
+    //         "adjustment":1,
+    //         "mat":"dummy",
+    //         "dish":"chicken rice",
+    //         "time": date
+    //       };
+    //
+    //       console.log("new order: ", newOrderData);
+    //
+    //       var newOrders = orders.push(newOrderData);
+    //       console.log("newOrders: ", newOrders)
+    //       transaction.update(shopDoc, { orders: orders});
+    //     });
+    // }).then(function() {
+    //     console.log("Transaction successfully committed!");
+    // }).catch(function(error) {
+    //     console.log("Transaction failed: ", error);
+    // });
   }
 
   function showOrders(orders){
@@ -87,16 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#orderTable').append(head);
             orders.forEach((o, index)=>{
                 var $tablebody = $(`
-                    <tr><td>  ${index}
+                    <tr><td>  ${o.orderID}
                     </td><td>  ${o.mat}
                     </td><td>  ${o.dish}
                     </td><td>  ${o.adjustment}
                     </td><td>  ${o.time.toDate()}
                     </td></tr>;
                     `)
-                $tablebody.on('click',_=>{
-                // window.location.href= API.server + '/asset_detail.html#'+ p.Key;
-                });
+                $tablebody.on('click',_=>{doneOrder(o.orderID)});
                 $('#orderTable').find('tbody').append($tablebody);
             })
           }
