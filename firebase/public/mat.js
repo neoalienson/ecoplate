@@ -25,9 +25,25 @@ document.addEventListener('DOMContentLoaded', function() {
   const db = firebase.firestore();
   const settings = {/* your settings... */ timestampsInSnapshots: true};
   db.settings(settings);
-
-
-
+//  mats/3JpQC7HWhxTf8ZVIqj71
+//  consumers/xGNSubolzxb2lmqJoOu2
+  var matRef = db.collection('mats').doc("3JpQC7HWhxTf8ZVIqj71");
+  var consumerRef = db.collection('mats').doc("xGNSubolzxb2lmqJoOu2");
+  matRef.get().then(function(doc) {
+    if (doc.exists) {
+        console.log("Document data:", doc.data());
+        matRef.set({'consumer': consumerRef, "done_order" : null});
+        $("div#status").html("Success")
+        setTimeout(function() {
+          window.location.replace('place-order.html');
+        }, 1000);
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
+}).catch(function(error) {
+    console.log("Error getting document:", error);
+});
 
 
 
