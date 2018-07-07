@@ -43,7 +43,13 @@ document.addEventListener('DOMContentLoaded', function() {
                      <p class="card-text">${o.description}</p>
                      <p class="card-text">HKD ${o.price}</p>
                      <input type="hidden" class="menu-item-path" value="${i.ref.path}">
-                     <input class="menu-item-qty" value="0">
+                     <input type="range" min="0" max="10" value="0" class="slider menu-item-qty" id="slider-${i.ref.id}"></input>
+                     <p>Qty: <div id="value-${i.ref.id}">0</div></p>
+                     <script>
+                     document.getElementById("slider-${i.ref.id}").oninput = function() {
+                       document.getElementById("value-${i.ref.id}").innerHTML = this.value;
+                     };
+                     </script>
                  </div>
              </div>
            </div>
@@ -66,7 +72,7 @@ function placeOrder() {
   }
 
   var newOrder = {
-    "adjustment": parseInt(document.getElementById('adjustment').value),
+    "adjustment": parseInt(document.getElementById('adjustment').value) / 100,
     "mat": db.doc('/mats/3JpQC7HWhxTf8ZVIqj71'),
     "items": items,
     "consumer" : db.doc('/consumer/xGNSubolzxb2lmqJoOu2'),
