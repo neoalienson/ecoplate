@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const db = firebase.firestore();
   const settings = {/* your settings... */ timestampsInSnapshots: true};
   db.settings(settings);
-//  mats/3JpQC7HWhxTf8ZVIqj71
-//  consumers/xGNSubolzxb2lmqJoOu2
+  // will retrieve from query once we have multiple mat printed after demo
   var matRef = db.collection('mats').doc("3JpQC7HWhxTf8ZVIqj71");
+  // will replace once the auth is complete
   var consumerRef = db.collection('mats').doc("xGNSubolzxb2lmqJoOu2");
   matRef.get().then(function(doc) {
     if (doc.exists) {
