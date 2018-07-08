@@ -46,10 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
       var orderData = doc.data();
       var dishPath = doc.data().dish[0].ref.path;
       var getDish = db.doc(dishPath).get().then(dishDoc =>{
-        console.log("dishDoc: ", dishDoc.data());
-        console.log("orderData: ", orderData)
-        console.log("orders push: ", orders )
-        console.log(orders.length);
         orderData.dish=dishDoc.data().name
         orders.push(orderData)
         localStorage.setItem("latest_orderID",  orders[0].orderID)
@@ -62,10 +58,21 @@ document.addEventListener('DOMContentLoaded', function() {
   const doneOrderInfo = db.collection('done_orders').orderBy("orderID", "desc").limit(5);
   doneOrderInfo.onSnapshot(querySnapshot=>{
     var doneOrders = [];
-    querySnapshot.forEach(doc =>{
-      doneOrders.push(doc.data())
+    querySnapshot.forEach((doc) =>{
+      console.log("doc: ", doc);
+      console.log("doc.data(): ", doc.data());
+      var orderData = doc.data();
+      var dishPath = doc.data().dish[0].ref.path;
+      var getDish = db.doc(dishPath).get().then(dishDoc =>{
+        console.log("dishDoc: ", dishDoc.data());
+        console.log("orderData: ", orderData)
+        console.log("orders push: ", doneOrders )
+        console.log(doneOrders.length);
+        orderData.dish=dishDoc.data().name
+        doneOrders.push(orderData)
+        showOrders(false, doneOrders);
+      })
     })
-    showOrders(false, doneOrders);
   });
 
 
