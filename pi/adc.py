@@ -61,6 +61,7 @@ def scanIfOrderAssociated():
 
                                 print(u'------Weight Array uploaded-------')
 
+                                # Done order is delievered, not finished eating
                                 db.collection(u'done_orders').document(docs.id).set(thisOrder.get().to_dict())
                                 db.collection(u'orders').document(docs.id).delete()
 
