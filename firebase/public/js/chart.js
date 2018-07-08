@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // })
     var orderIDhash = window.location.hash;
     var orderID = orderIDhash.slice(1, orderIDhash.length);
-    console.log("can I get hash? ", orderID);
+    console.log("can I get hasdddh? ", orderID);
     getWeights(orderID)
   } catch (e) {
     console.error(e);
@@ -34,16 +34,17 @@ document.addEventListener('DOMContentLoaded', function() {
     db.settings(settings);
     const doneOrderInfo = db.collection('done_orders').doc(orderID);
       doneOrderInfo.onSnapshot(doc=>{
-        var allweights = doc.data().weights;
-        if (allweights.length > 11){
-          var weights = allweights.slice(allweights.length - 10, allweights.length)
-        } else {
-          var weights = allweights
-        }
-        var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
-        drawChart(weights, weightLables);
-        showOrderDetails(doc.data())
-      })
+        console.log("doc.data(): ", doc.data())
+      //   var allweights = doc.data().weight;
+      //   if (allweights.length > 11){
+      //     var weights = allweights.slice(allweights.length - 10, allweights.length)
+      //   } else {
+      //     var weights = allweights
+      //   }
+      //   var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
+      //   drawChart(weights, weightLables);
+      //   showOrderDetails(doc.data())
+      // })
   }
 
   // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 CHARTS 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
