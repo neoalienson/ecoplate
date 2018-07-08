@@ -8,6 +8,8 @@ We have designed an experience that will help consumer communicate with the serv
 
 For details please go to http://www.hackathon.io/ecoplate
 
+*This is a demo project, no authentication implemented*
+
 ## Folders
 
 ### firebase
