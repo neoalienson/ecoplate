@@ -62,7 +62,7 @@ def scanIfOrderAssociated():
                                 print(u'------Weight Array uploaded-------')
 
                                 db.collection(u'done_orders').document(docs.id).set(thisOrder.get().to_dict())
-                                db.collection(u'orders').document(docs.id).delete()
+#                                db.collection(u'orders').document(docs.id).delete()
 
                                 print(u'Order is completed and moved to done')
 
