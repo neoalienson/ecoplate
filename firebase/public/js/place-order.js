@@ -106,7 +106,7 @@ function placeOrder() {
   db.collection('orders').doc(new_orderID.toString()).set(newOrder)
     .then(function() {
         console.log("Document successfully written!");
-        window.location.replace('order-processing.html');
+        window.location.replace('order-processing.html?id=' + new_orderID);
     })
     .catch(function(error) {
         console.error("Error writing document: ", error);
