@@ -76,6 +76,16 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
 
+  function emptyDone(){
+    var doneID = localStorage.getItem('doneOrderID')
+    console.log('doneID: ', doneID)
+    // Delete from newOrders
+    db.collection("done_orders").doc(doneID.toString()).delete().then(function() {
+        console.log("Document successfully deleted!");
+    }).catch(function(error) {
+        console.error("Error removing document: ", error);
+    });
+  }
 
   function addOrder(){
 
@@ -103,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function doneOrder(orderID){
+    localStorage.setItem('doneOrderID', orderID)
     var date = new Date();
 
     // Get from orders

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // })
     var orderIDhash = window.location.hash;
     var orderID = orderIDhash.slice(1, orderIDhash.length);
-    console.log("can I get hasdddh? ", orderID);
+    console.log("can I get hash? ", orderID);
     getWeights(orderID)
   } catch (e) {
     console.error(e);
@@ -35,14 +35,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const doneOrderInfo = db.collection('done_orders').doc(orderID);
       doneOrderInfo.onSnapshot(doc=>{
         console.log("doc.data(): ", doc.data())
-        var allweights = doc.data().weight;
-        if (allweights.length > 100){
-          var weights = allweights.slice(allweights.length - 10, allweights.length)
-        } else {
-          var weights = allweights
-        }
-        var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
-        drawChart(weights, weightLables);
+        if (doc.data().weight){
+            var allweights = doc.data().weight;
+            if (allweights.length > 100){
+              var weights = allweights.slice(allweights.length - 10, allweights.length)
+            } else {
+              var weights = allweights
+            }
+            var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
+            drawChart(weights, weightLables);
+      }
         showOrderDetails(doc.data())
       })
   }
@@ -86,10 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function showOrderDetails(od){
     document.getElementById('dishTime').innerHTML = od.time.toDate();
+    $('#orderDetails').empty();
     console.log("orderDetails: ", od);
-            var $tablebody = $(`
-              <tr><td>  Order ID </td><td>  ${od.orderID} </tr>
-              <tr><td>  Mat ID </td><td>  ${od.mat} </tr>
-              <tr><td>  Dish </td><td>  ${od.dish} </tr>`)
-            $('#orderDetails').find('tbody').append($tablebody);
+        var $tablebody = $(`
+          <tbody>
+          <tr><td>  Order ID </td><td>  ${od.orderID} </tr>
+          <tr><td>  Mat ID </td><td>  ${od.mat.id} </tr>
+          </tbody>`)
+        $('#orderDetails').append($tablebody);
     }
