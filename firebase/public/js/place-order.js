@@ -65,7 +65,24 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("Error getting document:", error);
   });
 
+  const orderInfo = db.collection('orders').orderBy("orderID", "desc").limit(5);
+    orderInfo.onSnapshot(querySnapshot=>{
+      var orders = [];
+      querySnapshot.forEach(doc =>{
+        orders.push(doc.data())
+      })
+
+    console.log('orders: ', orders)
+    console.log('latest: ', orders[0].orderID);
+    localStorage.setItem("latest_orderID",  orders[0].orderID)
+    });
+
+
+
 function placeOrder() {
+  var old_orderID = parseInt(localStorage.getItem('latest_orderID'));
+  var new_orderID = old_orderID+1;
+
   paths = $('.menu-item-path')
   qtys = $('.menu-item-qty')
   items=[];
@@ -78,14 +95,15 @@ function placeOrder() {
   var newOrder = {
     "adjustment": parseInt(document.getElementById('adjustment').value) / 100,
     "mat": db.doc('/mats/3JpQC7HWhxTf8ZVIqj71'),
-    "items": items,
+    "orderID":new_orderID,
     "consumer" : db.doc('/consumer/xGNSubolzxb2lmqJoOu2'),
-    "time": new Date()
+    "time": new Date(),
+    "dish": items
   };
 
   console.log("new: ", newOrder)
 
-  db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/orders').add(newOrder)
+  db.collection('orders').doc(new_orderID.toString()).set(newOrder)
     .then(function() {
         console.log("Document successfully written!");
         window.location.replace('order-processing.html');
@@ -93,7 +111,6 @@ function placeOrder() {
     .catch(function(error) {
         console.error("Error writing document: ", error);
     });
-
 }
 
 // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 AUTHENTICATION 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥

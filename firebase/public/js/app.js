@@ -26,17 +26,37 @@ document.addEventListener('DOMContentLoaded', function() {
   const settings = {/* your settings... */ timestampsInSnapshots: true};
   db.settings(settings);
 
+  // db.collection('shops/PVIRTZ9n1a7q7YVXJqAB/menu').get().then(function(collection) {
+  //   $('#menuTable').empty();
+  //     console.log("Document data:", collection.docs);
+  //      collection.docs.forEach((i, index)=>{
+  //        console.log("Document data 2:", i.ref.path);
+  //        db.doc(i.ref.path).get().then(function(doc) {
+  //          console.log(doc.data());
+  //          o = doc.data();
+  //
+
+
   const orderInfo = db.collection('orders').orderBy("orderID", "desc").limit(5);
   orderInfo.onSnapshot(querySnapshot=>{
     var orders = [];
-    querySnapshot.forEach(doc =>{
-      orders.push(doc.data())
-    })
+    querySnapshot.forEach((doc) =>{
+      console.log("doc: ", doc);
+      console.log("doc.data(): ", doc.data());
+      var orderData = doc.data();
+      var dishPath = doc.data().dish[0].ref.path;
+      var getDish = db.doc(dishPath).get().then(dishDoc =>{
+        console.log("dishDoc: ", dishDoc.data());
+        console.log("orderData: ", orderData)
+        console.log("orders push: ", orders )
+        console.log(orders.length);
+        orderData.dish=dishDoc.data().name
+        orders.push(orderData)
+        localStorage.setItem("latest_orderID",  orders[0].orderID)
+        showOrders(true, orders);
+      })
 
-  console.log('orders: ', orders)
-  console.log('latest: ', orders[0].orderID);
-  localStorage.setItem("latest_orderID",  orders[0].orderID)
-  showOrders(true, orders);
+    })
   });
 
   const doneOrderInfo = db.collection('done_orders').orderBy("orderID", "desc").limit(5);
@@ -143,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             orders.forEach((o, index)=>{
                 var $tablebody = $(`
                     <tr><td>  ${o.orderID}
-                    </td><td>  ${o.mat}
+                    </td><td>  ${o.mat.id}
                     </td><td>  ${o.dish}
                     </td><td>  ${o.adjustment}
                     </td><td>  ${o.time.toDate()}
