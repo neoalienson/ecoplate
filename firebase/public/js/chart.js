@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
   //
   // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
+//aaa
   try {
     let app = firebase.app();
     let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
@@ -35,16 +35,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const doneOrderInfo = db.collection('done_orders').doc(orderID);
       doneOrderInfo.onSnapshot(doc=>{
         console.log("doc.data(): ", doc.data())
-      //   var allweights = doc.data().weight;
-      //   if (allweights.length > 11){
-      //     var weights = allweights.slice(allweights.length - 10, allweights.length)
-      //   } else {
-      //     var weights = allweights
-      //   }
-      //   var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
-      //   drawChart(weights, weightLables);
-      //   showOrderDetails(doc.data())
-      // })
+        var allweights = doc.data().weight;
+        if (allweights.length > 100){
+          var weights = allweights.slice(allweights.length - 10, allweights.length)
+        } else {
+          var weights = allweights
+        }
+        var weightLables = Array.apply(null, {length: weights.length}).map(Number.call, Number);
+        drawChart(weights, weightLables);
+        showOrderDetails(doc.data())
+      })
   }
 
   // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 CHARTS 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
